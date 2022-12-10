@@ -69,13 +69,29 @@ in
             inherit name;
             runtimeInputs = [ pkgs.foreman ];
             text = ''
-              # TODO: root should be project root (where flake.nix lives)
-              ROOT=.
+              find_up() {
+                ancestors=()
+                while true; do
+                  if [[ -f $1 ]]; then
+                    echo "$PWD"
+                    exit 0
+                  fi
+                  ancestors+=("$PWD")
+                  if [[ $PWD == / ]] || [[ $PWD == // ]]; then
+                    echo "ERROR: Unable to locate the projectRootFile ($1) in any of: ''${ancestors[*]@Q}" >&2
+                    exit 1
+                  fi
+                  cd ..
+                done
+              }
+              # TODO: make configurable
+              tree_root=$(find_up "flake.nix")
 
               # We don't bother passing user's arguments here because foreman's
               # CLI argument handling is quite bad (some subcommands barf out
               # when seeing these global opts, like procfile/root)
-              foreman start --procfile ${procfile} --root=$ROOT
+              set -x
+              foreman start --procfile ${procfile} --root="$tree_root"
             '';
           };
       in
