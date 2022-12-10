@@ -70,7 +70,12 @@ in
             runtimeInputs = [ pkgs.foreman ];
             text = ''
               # TODO: root should be project root (where flake.nix lives)
-              foreman start --procfile ${procfile} --root=.
+              ROOT=.
+
+              # We don't bother passing user's arguments here because foreman's
+              # CLI argument handling is quite bad (some subcommands barf out
+              # when seeing these global opts, like procfile/root)
+              foreman start --procfile ${procfile} --root=$ROOT
             '';
           };
       in
