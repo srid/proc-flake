@@ -19,6 +19,13 @@ in
     perSystem = mkPerSystemOption
       ({ config, self', inputs', pkgs, system, ... }:
         let
+          procSubmodule = types.submodule {
+            options = {
+              groups = lib.mkOption {
+                type = types.attrsOf processGroupSubmodule;
+              };
+            };
+          };
           processGroupSubmodule = types.submodule {
             options = {
               processes = lib.mkOption {
@@ -39,7 +46,7 @@ in
         in
         {
           options.proc = lib.mkOption {
-            type = types.attrsOf processGroupSubmodule;
+            type = procSubmodule;
           };
         });
   };
@@ -50,7 +57,7 @@ in
           (k: v: {
             ${k} = processGroupCommand k v.processes;
           })
-          config.proc;
+          config.proc.groups;
         processGroupCommand = name: procs:
           let
             procfile =
