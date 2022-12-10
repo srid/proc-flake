@@ -1,3 +1,16 @@
 # proc-flake
 
-A [ `flake-parts` ] (https://flake.parts/) Nix module for running `Procfile` - like processes.
+A [`flake-parts`](https://flake.parts/) Nix module for running multiple processes in a dev shell.
+
+## Example
+
+```nix
+proc.groups.run.processes = {
+  haskell.command = "${lib.getExe pkgs.haskellPackages.ghcid}";
+  tailwind.command = "${lib.getExe pkgs.haskellPackages.tailwind} -w -o ./static/tailwind.css './src/**/*.hs'";
+};
+
+```
+
+Then, after you put `config.packages.run` (because "run" is the group name) to the buildInputs of your devShell, you will be able to run `run` from inside of the nix shell to be able to spin up the processes using foreman.
+
