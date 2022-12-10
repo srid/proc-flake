@@ -2,6 +2,8 @@
 
 A [`flake-parts`](https://flake.parts/) Nix module for running multiple processes in a dev shell.
 
+[honcho](https://github.com/nickstenning/honcho) is used to launch the processes.
+
 ## Example
 
 ```nix

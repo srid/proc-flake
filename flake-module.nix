@@ -67,7 +67,7 @@ in
           in
           pkgs.writeShellApplication {
             inherit name;
-            runtimeInputs = [ pkgs.foreman ];
+            runtimeInputs = [ pkgs.honcho ];
             text = ''
               find_up() {
                 ancestors=()
@@ -87,11 +87,13 @@ in
               # TODO: make configurable
               tree_root=$(find_up "flake.nix")
 
-              # We don't bother passing user's arguments here because foreman's
-              # CLI argument handling is quite bad (some subcommands barf out
-              # when seeing these global opts, like procfile/root)
+              # Pass user's arguments to honcho; if none was passed, pass
+              # 'start' to launch all processes.
+              ARG1="''${1:-start}"
+              shift 1 || true
+
               set -x
-              foreman start --procfile ${procfile} --root="$tree_root"
+              honcho --procfile ${procfile} --app-root="$tree_root" "$ARG1" "$@" 
             '';
           };
       in
