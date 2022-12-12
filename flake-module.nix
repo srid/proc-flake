@@ -4,15 +4,9 @@
 
 let
   inherit (flake-parts-lib)
-    mkSubmoduleOptions
     mkPerSystemOption;
   inherit (lib)
-    mkOption
-    mkDefault
     types;
-  inherit (types)
-    functionTo
-    raw;
 in
 {
   options = {
@@ -23,6 +17,9 @@ in
             options = {
               groups = lib.mkOption {
                 type = types.attrsOf processGroupSubmodule;
+                description = lib.mdDoc ''
+                  Process groups that can be invoked individually.
+                '';
               };
             };
           };
@@ -30,6 +27,9 @@ in
             options = {
               processes = lib.mkOption {
                 type = types.attrsOf processSubmodule;
+                description = lib.mdDoc ''
+                  Processes to run simultaneously when running this group.
+                '';
               };
             };
           };
@@ -37,7 +37,7 @@ in
             options = {
               command = lib.mkOption {
                 type = types.str;
-                description = ''
+                description = lib.mdDoc ''
                   The command to run the given process.
                 '';
               };
@@ -47,6 +47,9 @@ in
         {
           options.proc = lib.mkOption {
             type = procSubmodule;
+            description = lib.mdDoc ''
+              Configuration for processes to run in the development environment.
+            '';
           };
         });
   };
