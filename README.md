@@ -4,7 +4,7 @@ A [`flake-parts`](https://flake.parts/) Nix module for running multiple processe
 
 [honcho](https://github.com/nickstenning/honcho) is used to launch the processes.
 
-## Example
+## Usage
 
 ```nix
 proc.groups.run.processes = {
@@ -14,9 +14,13 @@ proc.groups.run.processes = {
 
 ```
 
-Then, after you put `config.packages.run` (because "run" is the group name) to the buildInputs of your devShell, you will be able to run `run` from inside of the nix shell to be able to spin up the processes using foreman.
+This gives a `proc.groups.run.package` derivation that you can put in the `nativeBuildInputs` of devShell for availability in the shell.
 
-See [this PR](https://github.com/EmaApps/ema-template/pull/40) for the complete change involved in using this as a `flake-parts` module in your project.
+For better discoverability, consider using this in conjunction with the [mission-control](https://github.com/Platonic-Systems/mission-control) module.
+
+## Examples
+
+- https://github.com/EmaApps/ema-template/pull/40
 
 ## Credits
 
