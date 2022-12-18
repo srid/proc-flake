@@ -43,6 +43,33 @@ in
                 '';
               };
             };
+            config = {
+              perSystem = { config, name, self', inputs', pkgs, ... }:
+                let
+                  procfile =
+                    pkgs.writeText "Procfile" (lib.concatStringsSep "\n"
+                      (lib.mapAttrsToList (name: v: "${name}: ${v.command}")
+                        config.processes));
+                in
+                {
+                  package = pkgs.writeShellApplication {
+                    inherit name;
+                    runtimeInputs = [ pkgs.honcho ];
+                    text = ''
+                      tree_root=''$(${lib.getExe config.flake-root.package})
+                      cd "$tree_root"
+
+                      # Pass user's arguments to honcho; if none was passed, pass
+                      # 'start' to launch all processes.
+                      ARG1="''${1:-start}"
+                      shift 1 || true
+
+                      set -x
+                      honcho --procfile ${procfile} "$ARG1" "$@" 
+                    '';
+                  };
+                };
+            };
           };
           processSubmodule = types.submodule {
             options = {
@@ -63,41 +90,5 @@ in
             '';
           };
         });
-  };
-  config = {
-    perSystem = { config, self', inputs', pkgs, ... }:
-      let
-        packages = pkgs.lib.concatMapAttrs
-          (k: v: {
-            ${k} = processGroupCommand k v.processes;
-          })
-          config.proc.groups;
-        processGroupCommand = name: procs:
-          let
-            procfile =
-              pkgs.writeText "Procfile" (lib.concatStringsSep "\n"
-                (lib.mapAttrsToList (name: v: "${name}: ${v.command}")
-                  procs));
-          in
-          pkgs.writeShellApplication {
-            inherit name;
-            runtimeInputs = [ pkgs.honcho ];
-            text = ''
-              tree_root=''$(${lib.getExe config.flake-root.package})
-              cd "$tree_root"
-
-              # Pass user's arguments to honcho; if none was passed, pass
-              # 'start' to launch all processes.
-              ARG1="''${1:-start}"
-              shift 1 || true
-
-              set -x
-              honcho --procfile ${procfile} "$ARG1" "$@" 
-            '';
-          };
-      in
-      {
-        proc.groups = lib.mapAttrs (_: package: { inherit package; }) packages;
-      };
   };
 }
