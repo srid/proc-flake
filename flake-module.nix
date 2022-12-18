@@ -28,7 +28,7 @@ in
               };
             };
           };
-          processGroupSubmodule = types.submodule ({ config, name, ... }: {
+          processGroupSubmodule = types.submodule (args@{ name, ... }: {
             options = {
               processes = lib.mkOption {
                 type = types.attrsOf processSubmodule;
@@ -48,7 +48,7 @@ in
                 procfile =
                   pkgs.writeText "Procfile" (lib.concatStringsSep "\n"
                     (lib.mapAttrsToList (name: v: "${name}: ${v.command}")
-                      config.processes));
+                      args.config.processes));
               in
               {
                 package = pkgs.writeShellApplication {
