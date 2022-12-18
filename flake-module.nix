@@ -97,7 +97,7 @@ in
           };
       in
       {
-        proc.groups.run.package = builtins.head packages;
+        proc.groups.run.package = packages.run;
       };
   };
 }
