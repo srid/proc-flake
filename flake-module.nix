@@ -12,9 +12,6 @@ in
 {
   options = {
     _file = __curPos.file;
-    imports = [
-      flake-root.flakeModule
-    ];
     perSystem = mkPerSystemOption
       ({ config, self', inputs', pkgs, system, ... }:
         let
@@ -59,6 +56,9 @@ in
         });
   };
   config = {
+    imports = [
+      flake-root.flakeModule
+    ];
     perSystem = { config, self', inputs', pkgs, ... }:
       let
         packages = pkgs.lib.concatMapAttrs
