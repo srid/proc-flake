@@ -10,11 +10,11 @@ let
     types;
 in
 {
+  imports = [
+    flake-root.flakeModule
+  ];
   options = {
     _file = __curPos.file;
-    imports = [
-      flake-root.flakeModule
-    ];
     perSystem = mkPerSystemOption
       ({ config, self', inputs', pkgs, system, ... }:
         let
