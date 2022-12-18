@@ -99,7 +99,7 @@ in
       lib.mapAttrs'
         (name: package: {
           name = "proc.groups.${name}.package";
-          value = package;
+          value = builtins.trace name package;
         })
         packages;
   };
