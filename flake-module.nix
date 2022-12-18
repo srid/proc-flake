@@ -96,11 +96,8 @@ in
             '';
           };
       in
-      lib.mapAttrs'
-        (name: package: {
-          name = "proc.groups.${name}.package";
-          value = builtins.trace name package;
-        })
-        packages;
+      {
+        proc.groups = lib.mapAttrs (_: package: { inherit package; }) packages;
+      };
   };
 }
