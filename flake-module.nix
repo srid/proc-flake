@@ -97,7 +97,7 @@ in
           };
       in
       {
-        proc.groups.run.package = packages.run;
+        proc.groups = lib.mapAttrs (_: package: { inherit package; }) packages;
       };
   };
 }
