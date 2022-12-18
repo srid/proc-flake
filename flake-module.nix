@@ -1,4 +1,3 @@
-{ flake-root }:
 # Largely inspired by:
 # https://github.com/cachix/devenv/blob/main/src/modules/processes.nix
 { self, config, lib, flake-parts-lib, ... }:
@@ -10,10 +9,6 @@ let
     types;
 in
 {
-  _file = __curPos.file;
-  imports = [
-    flake-root.flakeModule
-  ];
   options = {
     perSystem = mkPerSystemOption
       ({ config, self', inputs', pkgs, system, ... }:
