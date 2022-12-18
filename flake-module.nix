@@ -1,3 +1,4 @@
+{ flake-root }:
 # Largely inspired by:
 # https://github.com/cachix/devenv/blob/main/src/modules/processes.nix
 { self, config, lib, flake-parts-lib, ... }:
@@ -9,6 +10,10 @@ let
     types;
 in
 {
+  _file = __curPos.file;
+  imports = [
+    flake-root.flakeModule
+  ];
   options = {
     perSystem = mkPerSystemOption
       ({ config, self', inputs', pkgs, system, ... }:
@@ -72,23 +77,8 @@ in
             inherit name;
             runtimeInputs = [ pkgs.honcho ];
             text = ''
-              find_up() {
-                ancestors=()
-                while true; do
-                  if [[ -f $1 ]]; then
-                    echo "$PWD"
-                    exit 0
-                  fi
-                  ancestors+=("$PWD")
-                  if [[ $PWD == / ]] || [[ $PWD == // ]]; then
-                    echo "ERROR: Unable to locate the projectRootFile ($1) in any of: ''${ancestors[*]@Q}" >&2
-                    exit 1
-                  fi
-                  cd ..
-                done
-              }
-              # TODO: make configurable
-              tree_root=$(find_up "flake.nix")
+              tree_root=''$(${lib.getExe config.flake-root.package})
+              cd "$tree_root"
 
               # Pass user's arguments to honcho; if none was passed, pass
               # 'start' to launch all processes.
@@ -96,7 +86,7 @@ in
               shift 1 || true
 
               set -x
-              honcho --procfile ${procfile} --app-root="$tree_root" "$ARG1" "$@" 
+              honcho --procfile ${procfile} "$ARG1" "$@" 
             '';
           };
       in
