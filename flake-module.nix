@@ -28,7 +28,7 @@ in
               };
             };
           };
-          processGroupSubmodule = types.submodule {
+          processGroupSubmodule = types.submodule (args@{ name, ... }: {
             options = {
               processes = lib.mkOption {
                 type = types.attrsOf processSubmodule;
@@ -36,8 +36,39 @@ in
                   Processes to run simultaneously when running this group.
                 '';
               };
+              package = lib.mkOption {
+                type = types.package;
+                description = lib.mdDoc ''
+                  The package to use to run the given process group.
+                '';
+              };
             };
-          };
+            config =
+              let
+                procfile =
+                  pkgs.writeText "Procfile" (lib.concatStringsSep "\n"
+                    (lib.mapAttrsToList (name: v: "${name}: ${v.command}")
+                      args.config.processes));
+              in
+              {
+                package = pkgs.writeShellApplication {
+                  inherit name;
+                  runtimeInputs = [ pkgs.honcho ];
+                  text = ''
+                    tree_root=''$(${lib.getExe config.flake-root.package})
+                    cd "$tree_root"
+
+                    # Pass user's arguments to honcho; if none was passed, pass
+                    # 'start' to launch all processes.
+                    ARG1="''${1:-start}"
+                    shift 1 || true
+
+                    set -x
+                    honcho --procfile ${procfile} "$ARG1" "$@" 
+                  '';
+                };
+              };
+          });
           processSubmodule = types.submodule {
             options = {
               command = lib.mkOption {
@@ -57,41 +88,5 @@ in
             '';
           };
         });
-  };
-  config = {
-    perSystem = { config, self', inputs', pkgs, ... }:
-      let
-        packages = pkgs.lib.concatMapAttrs
-          (k: v: {
-            ${k} = processGroupCommand k v.processes;
-          })
-          config.proc.groups;
-        processGroupCommand = name: procs:
-          let
-            procfile =
-              pkgs.writeText "Procfile" (lib.concatStringsSep "\n"
-                (lib.mapAttrsToList (name: v: "${name}: ${v.command}")
-                  procs));
-          in
-          pkgs.writeShellApplication {
-            inherit name;
-            runtimeInputs = [ pkgs.honcho ];
-            text = ''
-              tree_root=''$(${lib.getExe config.flake-root.package})
-              cd "$tree_root"
-
-              # Pass user's arguments to honcho; if none was passed, pass
-              # 'start' to launch all processes.
-              ARG1="''${1:-start}"
-              shift 1 || true
-
-              set -x
-              honcho --procfile ${procfile} "$ARG1" "$@" 
-            '';
-          };
-      in
-      {
-        inherit packages;
-      };
   };
 }
