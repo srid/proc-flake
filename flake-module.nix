@@ -36,6 +36,12 @@ in
                   Processes to run simultaneously when running this group.
                 '';
               };
+              package = lib.mkOption {
+                type = types.package;
+                description = lib.mdDoc ''
+                  The package to use to run the given process group.
+                '';
+              };
             };
           };
           processSubmodule = types.submodule {
@@ -91,7 +97,7 @@ in
           };
       in
       {
-        proc = { inherit packages; };
+        proc.groups.run.package = builtins.head packages;
       };
   };
 }
