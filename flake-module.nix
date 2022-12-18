@@ -78,6 +78,7 @@ in
             runtimeInputs = [ pkgs.honcho ];
             text = ''
               tree_root=''$(${lib.getExe config.flake-root.package})
+              cd "$tree_root"
 
               # Pass user's arguments to honcho; if none was passed, pass
               # 'start' to launch all processes.
@@ -85,7 +86,7 @@ in
               shift 1 || true
 
               set -x
-              honcho --procfile ${procfile} --app-root="$tree_root" "$ARG1" "$@" 
+              honcho --procfile ${procfile} "$ARG1" "$@" 
             '';
           };
       in
