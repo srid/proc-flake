@@ -28,7 +28,7 @@ in
               };
             };
           };
-          processGroupSubmodule = types.submodule {
+          processGroupSubmodule = types.submodule ({ config, name, ... }: {
             options = {
               processes = lib.mkOption {
                 type = types.attrsOf processSubmodule;
@@ -43,34 +43,32 @@ in
                 '';
               };
             };
-            config = {
-              perSystem = { config, name, self', inputs', pkgs, ... }:
-                let
-                  procfile =
-                    pkgs.writeText "Procfile" (lib.concatStringsSep "\n"
-                      (lib.mapAttrsToList (name: v: "${name}: ${v.command}")
-                        config.processes));
-                in
-                {
-                  package = pkgs.writeShellApplication {
-                    inherit name;
-                    runtimeInputs = [ pkgs.honcho ];
-                    text = ''
-                      tree_root=''$(${lib.getExe config.flake-root.package})
-                      cd "$tree_root"
+            config =
+              let
+                procfile =
+                  pkgs.writeText "Procfile" (lib.concatStringsSep "\n"
+                    (lib.mapAttrsToList (name: v: "${name}: ${v.command}")
+                      config.processes));
+              in
+              {
+                package = pkgs.writeShellApplication {
+                  inherit name;
+                  runtimeInputs = [ pkgs.honcho ];
+                  text = ''
+                    tree_root=''$(${lib.getExe config.flake-root.package})
+                    cd "$tree_root"
 
-                      # Pass user's arguments to honcho; if none was passed, pass
-                      # 'start' to launch all processes.
-                      ARG1="''${1:-start}"
-                      shift 1 || true
+                    # Pass user's arguments to honcho; if none was passed, pass
+                    # 'start' to launch all processes.
+                    ARG1="''${1:-start}"
+                    shift 1 || true
 
-                      set -x
-                      honcho --procfile ${procfile} "$ARG1" "$@" 
-                    '';
-                  };
+                    set -x
+                    honcho --procfile ${procfile} "$ARG1" "$@" 
+                  '';
                 };
-            };
-          };
+              };
+          });
           processSubmodule = types.submodule {
             options = {
               command = lib.mkOption {
