@@ -16,13 +16,13 @@ proc.groups.run.processes = {
 
 ```
 
-This gives a `proc.groups.run.package` derivation that you can put in the `nativeBuildInputs` of devShell for availability in the shell.
+This gives a `config.proc.groups.run.package` derivation that you can put in the `nativeBuildInputs` of devShell for availability in the shell.
 
 For better discoverability, consider using this in conjunction with the [mission-control](https://github.com/Platonic-Systems/mission-control) module.
 
 ## Examples
 
-- https://github.com/EmaApps/ema-template/pull/40
+- https://github.com/EmaApps/ema-template
 
 ## Credits
 
