@@ -6,6 +6,8 @@ A [`flake-parts`](https://flake.parts/) Nix module for running multiple processe
 
 ## Usage
 
+NOTE: this module requires the [flake-root](https://github.com/srid/flake-root) module.
+
 ```nix
 proc.groups.run.processes = {
   haskell.command = "${lib.getExe pkgs.haskellPackages.ghcid}";
