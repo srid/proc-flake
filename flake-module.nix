@@ -91,7 +91,7 @@ in
           };
       in
       {
-        inherit packages;
+        proc = { inherit packages; };
       };
   };
 }
