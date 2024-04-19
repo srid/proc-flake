@@ -17,7 +17,7 @@ in
             options = {
               groups = lib.mkOption {
                 type = types.attrsOf processGroupSubmodule;
-                description = lib.mdDoc ''
+                description = ''
                   Process groups that can be invoked individually.
                 '';
               };
@@ -27,13 +27,13 @@ in
             options = {
               processes = lib.mkOption {
                 type = types.attrsOf processSubmodule;
-                description = lib.mdDoc ''
+                description = ''
                   Processes to run simultaneously when running this group.
                 '';
               };
               package = lib.mkOption {
                 type = types.package;
-                description = lib.mdDoc ''
+                description = ''
                   The package to use to run the given process group.
                 '';
               };
@@ -68,7 +68,7 @@ in
             options = {
               command = lib.mkOption {
                 type = types.str;
-                description = lib.mdDoc ''
+                description = ''
                   The command to run the given process.
                 '';
               };
@@ -78,7 +78,7 @@ in
         {
           options.proc = lib.mkOption {
             type = procSubmodule;
-            description = lib.mdDoc ''
+            description = ''
               Configuration for processes to run in the development environment.
             '';
           };
